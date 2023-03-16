@@ -15,6 +15,8 @@ app.use(cors())
 //middilwares or routes
 
 app.use('/api', require('./routes/userRoutes'));
+app.use('/api', require('./routes/sectionRoute'));
+app.use('/api', require('./routes/studentCardRoute'));
 
 // mongodb connection
 const URI = process.env.MONGO_URL

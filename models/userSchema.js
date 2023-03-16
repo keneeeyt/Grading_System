@@ -26,6 +26,10 @@ const userSchema = mongoose.Schema({
     section: {
         type: Array,
         default: []
+    },
+    card: {
+        type: Array,
+        default: []
     }
 })
 
