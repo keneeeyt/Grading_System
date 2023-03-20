@@ -22,14 +22,22 @@ const userSchema = mongoose.Schema({
         type: String,
         default: 'user'
     },
+    studsection: {
+        type: String,
+        default: ''
+    },
 
     section: {
         type: Array,
-        default: []
+        default:[]
     },
     card: {
         type: Array,
         default: []
+    },
+    avatar: {
+        type:String,
+        default: 'https://res.cloudinary.com/dzosecp8f/image/upload/v1677940151/blank-profile-picture-g2b8faf720_1280_eks7er.png'
     }
 })
 

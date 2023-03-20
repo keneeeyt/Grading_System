@@ -11,13 +11,15 @@ module.exports.addUsers = (req,res) => {
     User.findOne({email: input.email})
     .then(result => {
         if(result !== null){
-            return res.send('email is already exists!')
+            return res.send({msg:'email is already exists!'})
         }else {
             let newUser = new User({
                 firstName: input.firstName,
                 lastName: input.lastName,
                 email: input.email,
                 password:bcrypt.hashSync(input.password, 10),
+                section: input.section,
+                role:input.role
             })
 
             newUser.save()
@@ -43,7 +45,7 @@ module.exports.login = (req,res) => {
     User.findOne({email: input.email})
     .then(result => {
         if(result === null){
-            return res.send('email is not yet registered!')
+            return res.send(false)
         }else {
             const isPasswordCorrect = bcrypt.compareSync(input.password, result.password)
 
@@ -52,7 +54,7 @@ module.exports.login = (req,res) => {
             return res.send({...others, auth:auth.createAccessToken(result)})
 
             } else {
-                return res.send('password is incorrect!')
+                return res.send(false)
             }
         }
     })
@@ -62,7 +64,7 @@ module.exports.login = (req,res) => {
 }
 
 
-// getAlluser
+// getAllteacher
 
 module.exports.getAllUser = (req,res) => {
     const userData = auth.decode(req.headers.authorization)
@@ -70,7 +72,7 @@ module.exports.getAllUser = (req,res) => {
     if(userData.role !== 'admin'){
         return res.send('you are not admin')
     } else {
-        User.findOne({role: 'teacher'})
+        User.find({role: 'teacher'})
         .then(result => {
             if(result === null){
                 return res.send('there is no teacher available')
@@ -78,5 +80,57 @@ module.exports.getAllUser = (req,res) => {
                 return res.send(result)
             }
         })
+    }
+}
+
+module.exports.getProfile = (req, res) => {
+	// let input = request.body;
+	const userData = auth.decode(req.headers.authorization);
+
+	console.log(userData);
+
+	return User.findById(userData._id).then(result =>{
+		// avoid to expose sensitive information such as password.
+		result.password = "";
+
+		return res.send(result);
+	})
+
+}
+
+
+//GET SINGLE STUDENT for CARDS to show
+module.exports.getStudent =(req,res)=> {
+    const id = req.params.id
+    const userData = auth.decode(req.headers.authorization)
+        
+            User.findById({_id: id })
+            .then(result => {
+                return res.send(result)
+            })
+            .catch(err => {
+                return res.send(err)
+            })
+      
+       
+    
+}
+
+
+// Delete user
+
+module.exports.deleteUser = (req,res) => {
+    let id = req.params.id
+    const userData = auth.decode(req.headers.authorization)
+    if(userData.role === 'admin'){
+    User.findByIdAndDelete({_id: id})
+    .then(result =>{
+        res.send(true)
+    })
+    .catch(error =>{
+        return res.send(false)
+    })
+    }else{
+        res.send(false)
     }
 }

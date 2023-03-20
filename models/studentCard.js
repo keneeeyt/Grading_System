@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const studentCard = mongoose.Schema({
-    studentId: {
-        type: mongoose.Types.ObjectId, ref:'user'
+    subject: {
+        type: String,
+        required: true
     },
     firstGrading: {
         type:String,
@@ -28,6 +29,10 @@ const studentCard = mongoose.Schema({
         type:String,
         required: true
     },
+    average: {
+        type:String,
+        required: true
+    }
 })
 
 module.exports = mongoose.model('studentcard', studentCard)

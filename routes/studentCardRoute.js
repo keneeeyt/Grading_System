@@ -7,9 +7,9 @@ const auth = require('../auth');
 
 //route for adding a card for student
 
-router.post('/card', auth.verify, studentCard.createCard)
+router.post('/card/:id', auth.verify, studentCard.createCard)
 
 //route for retreive card by studentID
 
-router.get('/gradecard', auth.verify, studentCard.retreiveCard)
+router.get('/gradecard/:id', auth.verify, studentCard.retreiveCard)
 module.exports = router;

@@ -8,22 +8,23 @@ const auth = require('../auth');
 module.exports.createCard = (req,res) => {
     let input = req.body;
     const userData = auth.decode(req.headers.authorization);
-
+    let id = req.params.id
     if(userData.role !== 'teacher'){
         return res.send('You are not a teacher');
     }else {
         let newCard = new StudentCard({
-            _id: input._id,
+            subject: input.subject,
             firstGrading: input.firstGrading,
             secondGrading: input.secondGrading,
             thirdGrading: input.thirdGrading,
             fourthGrading: input.fourthGrading,
             finalGrading: input.finalGrading,
-            remarks: input.remarks
+            remarks: input.remarks,
+            average: input.average
         })
         newCard.save()
         .then(result => {
-            User.findOne({_id: input._id})
+            User.findOne({_id: id})
             .then(result => {
                 if(result === null){
                     return res.send('this is cannot be found!')
@@ -53,13 +54,13 @@ module.exports.createCard = (req,res) => {
 // Get card by studentID 
 
 module.exports.retreiveCard = (req,res) => {
-    let input = req.body;
+    let id = req.params.id;
     const userData = auth.decode(req.headers.authorization)
 
     if(userData.role !== 'user'){
         return res.send('You are not allowed to do that!')
     } else {
-        StudentCard.findOne({studentId: input._id})
+        User.findOne({_id: id})
         .then(result => {
             if(!result){
                 return res.send('no card exists!')

@@ -5,9 +5,10 @@ const sectionSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    students: [{
-        type: mongoose.Types.ObjectId, ref: 'user'
-    }],
+    students: {
+        type: Array,
+        default:[]
+    },
     grade: {
         type: String,
         required: true

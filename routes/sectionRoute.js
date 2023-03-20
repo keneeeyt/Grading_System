@@ -8,7 +8,18 @@ router.post('/addstudent', auth.verify, sectionController.addStudent);
 
 //routes for adding a section
 
-router.post('/addsection', auth.verify, sectionController.addSection);
+router.post('/addsection/:id', auth.verify, sectionController.addSection);
 
+
+//routes for get single section
+router.get('/studsection/:id', auth.verify, sectionController.getSingleSection);
+
+
+//route for get all section
+router.get('/sections', auth.verify, sectionController.getSection);
+
+//route for delete section
+
+router.delete('/deletesection/:id', auth.verify, sectionController.deleteSection);
 
 module.exports = router;
