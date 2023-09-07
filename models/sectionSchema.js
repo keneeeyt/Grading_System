@@ -12,6 +12,10 @@ const sectionSchema = mongoose.Schema({
     grade: {
         type: String,
         required: true
+    },
+    update_time: {
+        type: Date,
+        default: Date.now
     }
 })
 

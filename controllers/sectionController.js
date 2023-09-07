@@ -6,55 +6,76 @@ const bcrypt = require('bcrypt');
 
 // let Add Student
 
-module.exports.addStudent = (req,res) => {
+module.exports.addStudent = (req, res) => {
     let input = req.body;
     const userData = auth.decode(req.headers.authorization);
-    if(userData.role !== 'teacher'){
-        return res.send('You are not a teacher!')
-    }else {
-        let newStudent = new User({
-            firstName: input.firstName,
-            lastName: input.lastName,
-            email: input.email,
-            password:bcrypt.hashSync(input.password, 10),
-            studsection: input.studsection
-        })
-        User.findOne({email:input.email })
-        .then(result => {
-            if(result !== null){
-                return res.send("student email is already exists!")
-            }else {
-                newStudent.save()
-            .then(result => {
-                Section.findOne({sectionName: input.studsection})
-                .then(result => {
-                    result.students.push(newStudent)
-                    
-                    return result.save()
-                    .then(save => true)
-                    .catch(err => err)
-                })
-                .catch(err => {
-                    return res.send(err)
-                })
-
-                return res.send({
-                    msg: 'Successfully added student',
-                    student: {
-                        ...result._doc,
-                        password: ''
-                    }
-                })
-               
-            })
-            .catch(err => {
-                return res.send(err)
-            })
-            }
-        })
-        
+  
+    if (userData.role !== 'teacher') {
+      return res.send('You are not a teacher!');
+    } else {
+      let newStudent = new User({
+        firstName: input.firstName,
+        lastName: input.lastName,
+        email: input.email,
+        password: bcrypt.hashSync(input.password, 10),
+        advisory: input.advisory,
+      });
+  
+      User.findOne({ email: input.email })
+        .then((result) => {
+          if (result !== null) {
+            return res.send('Student email already exists!');
+          } else {
+            newStudent.save()
+              .then((result) => {
+                Section.findOne({ sectionName: input.advisory })
+                  .then((sectionResult) => {
+                    sectionResult.students.push(newStudent);
+  
+                    // Set the update_time field to the current date and time
+                    sectionResult.update_time = new Date();
+  
+                    sectionResult.save()
+                      .then(() => {
+                        User.findById({ _id: userData._id })
+                          .then((teacherResult) => {
+                            teacherResult.student.push(newStudent);
+                            teacherResult.save()
+                              .then(() => {
+                                return res.send({
+                                  msg: 'Successfully added student',
+                                  student: {
+                                    ...result._doc,
+                                    password: '',
+                                  },
+                                });
+                              })
+                              .catch((err) => {
+                                return res.status(500).json({ msg: 'Error' });
+                              });
+                          })
+                          .catch((err) => {
+                            return res.status(500).json({ msg: 'Error' });
+                          });
+                      })
+                      .catch((err) => {
+                        return res.status(500).json({ msg: 'Error' });
+                      });
+                  })
+                  .catch((err) => {
+                    return res.status(500).json({ msg: 'Error' });
+                  });
+              })
+              .catch((err) => {
+                return res.send(err);
+              });
+          }
+        });
     }
-}
+  };
+
+
+
 
 //add section class
 
@@ -81,7 +102,9 @@ module.exports.addSection = (req,res) => {
     
                 User.findOne({_id: id})
                 .then(result => {
-                    result.section.push(newSection)
+                    result.section.push({
+                        ...newSection._doc
+                    })
     
                    return result.save()
                     .then(save => true)

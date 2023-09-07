@@ -1,7 +1,7 @@
 const User = require('../models/userSchema');
 const bcrypt= require('bcrypt');
 const auth = require('../auth');
-
+const studentCard = require('../models/studentCard')
 
 
 // lets add user
@@ -19,9 +19,9 @@ module.exports.addUsers = (req,res) => {
                 email: input.email,
                 password:bcrypt.hashSync(input.password, 10),
                 section: input.section,
+                advisory: input.advisory,
                 role:input.role
             })
-
             newUser.save()
             .then(result => {
                 return res.send(true)
@@ -104,7 +104,7 @@ module.exports.getStudent =(req,res)=> {
     const id = req.params.id
     const userData = auth.decode(req.headers.authorization)
         
-            User.findById({_id: id })
+            studentCard.findOne({studentId: id })
             .then(result => {
                 return res.send(result)
             })

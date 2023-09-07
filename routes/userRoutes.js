@@ -21,6 +21,8 @@ router.get('/details', auth.verify, userController.getProfile);
 //get student to show card
 router.get('/studentcard/:id', auth.verify, userController.getStudent);
 
+//delete user
+
 router.delete('/delete/:id', auth.verify, userController.deleteUser)
 
 module.exports = router;
